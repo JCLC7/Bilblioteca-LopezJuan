@@ -43,5 +43,12 @@ namespace Bilblioteca_LopezJuan.Controllers
             return RedirectToAction("Index");
 
         }
+
+        [HttpPost]
+        public IActionResult nuevo()
+        {
+           
+            return View();
+        }
     }
 }
