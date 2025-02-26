@@ -9,21 +9,22 @@ namespace Bilblioteca_LopezJuan.Services.Services
     public class UsuarioServices : IUsuarioServices
     {
         private readonly AplicationDBcontext _dbcontext;
-
+       
         public UsuarioServices(AplicationDBcontext dBcontext)
         {
             _dbcontext = dBcontext;
+            
 
 
         }
 
-        public List<Usuario>? GetUsers()
+        public async Task<List<Usuario>> GetUsers()
         {
             try
             {
-                 var result = _dbcontext.Usuarios.Include(x=> x.roles).ToList();
+                var result = await _dbcontext.Usuario.Include(x => x.Roles).ToListAsync();
 
-                var users = _dbcontext.Usuarios.ToList();
+
                 return result;
             }
             catch (Exception ex)
@@ -33,23 +34,24 @@ namespace Bilblioteca_LopezJuan.Services.Services
             }
         }
 
-        public Usuario Finduser (int id)
+        public async Task<Usuario> Finduser(int id)
         {
             try
             {
-                Usuario usuario = _dbcontext.Usuarios.Find(id);
-               
+                Usuario usuario = await _dbcontext.Usuario.FindAsync(id);
+
 
 
                 return usuario;
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new Exception("error: " + ex.Message);
             }
         }
-      
-        public bool CreateUser(Usuario user)
+
+        public async Task<bool> CreateUser(Usuario user)
         {
 
             try
@@ -60,42 +62,46 @@ namespace Bilblioteca_LopezJuan.Services.Services
                     Apellido = user.Apellido,
                     UserName = user.UserName,
                     Password = user.Password,
-                    FkRol = 1
+                    FkRol = 1,
 
                 };
-                var result = _dbcontext.Usuarios.Add(usuario);
-                _dbcontext.SaveChanges();
+                var result = await _dbcontext.Usuario.AddAsync(usuario);
+                await _dbcontext.SaveChangesAsync();
 
                 if (result != null)
                 {
                     return true;
                 }
                 return false;
-                    
+
             }
             catch (Exception e)
             {
 
-                throw new Exception("error: " + e.Message);
+                if (e.InnerException != null)
+                {
+                    throw new Exception("Error: " + e.InnerException.Message);
+                }
+                throw new Exception("Error: " + e.Message);
             }
 
         }
 
-        public bool EditUser(Usuario user)
+        public async Task<bool> EditUser(Usuario user)
         {
             try
             {
 
-                Finduser(user.PkUsuario);
-                Usuario usuario = Finduser(user.PkUsuario);
+                await Finduser(user.PkUsuario);
+                Usuario usuario = await Finduser(user.PkUsuario);
 
                 usuario.Nombre = user.Nombre;
                 usuario.Apellido = user.Apellido;
                 usuario.UserName = user.UserName;
                 usuario.Password = user.Password;
-                usuario.FkRol = 1;
-                var result = _dbcontext.Usuarios.Update(usuario);
-                _dbcontext.SaveChanges();
+                usuario.FkRol = user.FkRol;
+                var result = _dbcontext.Usuario.Update(usuario);
+                await _dbcontext.SaveChangesAsync();
 
                 if (result != null)
                 {
@@ -107,11 +113,37 @@ namespace Bilblioteca_LopezJuan.Services.Services
             catch (Exception e)
             {
 
-                throw new Exception("error: " + e.Message);
+                if (e.InnerException != null)
+                {
+                    throw new Exception("Error: " + e.InnerException.Message);
+                }
+                throw new Exception("Error: " + e.Message);
             }
-
         }
 
-        
+       
+           public async Task<bool> DeleteUser(int id)
+        {
+            try
+            {
+                var usuario = await _dbcontext.Usuario.FindAsync(id);
+                if (usuario == null)
+                {
+                    return false;
+                }
+                _dbcontext.Usuario.Remove(usuario);
+                await _dbcontext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error al eliminar el usuario: " + (e.InnerException?.Message ?? e.Message));
+            }
+        }
+
+    
+
+
     }
 }
+

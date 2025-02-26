@@ -1,53 +1,90 @@
 ﻿using Bilblioteca_LopezJuan.Models.Domain;
 using Bilblioteca_LopezJuan.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace Bilblioteca_LopezJuan.Controllers
 {
     public class UsuariosController : Controller
     {
         private readonly IUsuarioServices _usuarioServices;
-        public UsuariosController(IUsuarioServices usuarioServices)
+        private readonly IRolService _rolService;
+        public UsuariosController(IUsuarioServices usuarioServices, IRolService rolService)
         {
             _usuarioServices = usuarioServices;
-
+            _rolService = rolService;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var result = _usuarioServices.GetUsers();
+            var result = await _usuarioServices.GetUsers();
             return View(result);
         }
 
-        [HttpGet]
-        public IActionResult Add() { 
-            return View();
-        }
+      
         [HttpPost]
-        public IActionResult Post(Usuario usuario) { 
-            _usuarioServices.CreateUser(usuario);
+        public async Task<IActionResult> Post(Usuario usuario) {
+          
+            await _usuarioServices.CreateUser(usuario);
             return RedirectToAction("Index");
                         
         }
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var result = _usuarioServices.Finduser(id);
+            var result = await _usuarioServices.Finduser(id);
+            List<Rol> roels = await _rolService.GetAllRol();
+
+            ViewBag.Roles = roels.Select(p => new SelectListItem()
+            {
+                Text = p.Nombre,
+                Value = p.PkRol.ToString()
+            });
             return View(result);
 
         }
 
         [HttpPost]
-        public IActionResult PostEdit(Usuario usuario)
+        public async Task<IActionResult> PostEdit(Usuario usuario)
         {
-            _usuarioServices.EditUser(usuario);
+            await _usuarioServices.EditUser(usuario);
             return RedirectToAction("Index");
 
         }
-
-        [HttpPost]
-        public IActionResult nuevo()
+        [HttpDelete]
+        public async Task<IActionResult> Eliminar(int id)
         {
            
+            try
+            {
+                await _usuarioServices.DeleteUser(id);
+               
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error al eliminar el usuario");
+            }
+
+        }
+       
+
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Add()
+        {
+            
+
+            List <Rol> result = await _rolService.GetAllRol();
+
+            ViewBag.Roles = result.Select(p => new SelectListItem()
+            {
+                Text = p.Nombre,
+                Value = p.PkRol.ToString()
+            });
             return View();
         }
     }

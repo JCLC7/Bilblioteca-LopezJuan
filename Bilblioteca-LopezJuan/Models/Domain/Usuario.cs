@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bilblioteca_LopezJuan.Models.Domain
 {
+    [Table("Usuario")]
     public class Usuario
     {
         [Key]
@@ -11,9 +12,9 @@ namespace Bilblioteca_LopezJuan.Models.Domain
         public string Apellido { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
-        [ForeignKey("roles")]
+        [ForeignKey("Roles")]
         public int FkRol { get; set; }
-
-        public Rol roles { get; set; }
+       
+        public Rol Roles { get; set; }
     }
 }

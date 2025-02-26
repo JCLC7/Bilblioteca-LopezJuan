@@ -35,7 +35,7 @@ namespace Bilblioteca_LopezJuan.Migrations
 
                     b.HasKey("PkRol");
 
-                    b.ToTable("Rol");
+                    b.ToTable("roles");
 
                     b.HasData(
                         new
@@ -92,13 +92,13 @@ namespace Bilblioteca_LopezJuan.Migrations
 
             modelBuilder.Entity("Bilblioteca_LopezJuan.Models.Domain.Usuario", b =>
                 {
-                    b.HasOne("Bilblioteca_LopezJuan.Models.Domain.Rol", "roles")
+                    b.HasOne("Bilblioteca_LopezJuan.Models.Domain.Rol", "Roles")
                         .WithMany()
                         .HasForeignKey("FkRol")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("roles");
+                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

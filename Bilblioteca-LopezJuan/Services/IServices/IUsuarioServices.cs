@@ -4,9 +4,10 @@ namespace Bilblioteca_LopezJuan.Services.IServices
 {
     public interface IUsuarioServices
     {
-        public List<Usuario>? GetUsers();
-        public bool CreateUser(Usuario user);
-        public Usuario Finduser(int id);
-        public bool EditUser(Usuario user);
+        public  Task<List<Usuario>?> GetUsers();
+        public  Task<Usuario> Finduser(int id);
+        public  Task<bool> CreateUser(Usuario user);
+        public  Task<bool> EditUser(Usuario user);
+        public  Task<bool> DeleteUser(int id);
     }
 }

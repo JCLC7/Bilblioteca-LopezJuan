@@ -13,6 +13,7 @@ builder.Services.AddDbContext<AplicationDBcontext> (options => options.UseSqlSer
 
 //inyeccion de dependencia 
 builder.Services.AddTransient<IUsuarioServices, UsuarioServices>();
+builder.Services.AddTransient<IRolService, RolService>();
 
 var app = builder.Build();
 
